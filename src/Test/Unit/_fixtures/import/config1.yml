@@ -1,0 +1,6 @@
+entity1:
+  skip: false
+entity2:
+  skip: false
+entity3:
+  skip: true

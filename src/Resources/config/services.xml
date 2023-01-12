@@ -1,0 +1,259 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults public="false" autoconfigure="true" autowire="true" />
+        <service id="Modig\Dataset\Import\FileLoader" />
+        <service id="Modig\Dataset\Import\OutputHandler" />
+        <service id="Modig\Dataset\Import\DataProcessor\Manufacturer" />
+        <service id="Modig\Dataset\Import\DataProcessor\Property" />
+        <service id="Modig\Dataset\Import\DataProcessor\Category" />
+        <service id="Modig\Dataset\Import\DataProcessor\Media" />
+        <service id="Modig\Dataset\Import\DataProcessor\Product" />
+        <service id="Modig\Dataset\Import\ImportFactory" class="Modig\Dataset\Import\ImportFactory">
+            <argument key="$entities" type="tagged_iterator" tag="modig.dataset.import.entity" index-by="key"/>
+        </service>
+        <service id="Modig\Dataset\Console\Command\Import">
+            <argument key="$importFactory" type="service" id="Modig\Dataset\Import\ImportFactory" />
+            <tag name="console.command"/>
+        </service>
+        <!-- Locators -->
+        <service id="modig.dataset.locator.layout" class="Modig\Dataset\Import\Locator\Locator">
+            <argument key="$repository" type="service" id="cms_page.repository" />
+            <tag name="modig.dataset.locator" key="layout" />
+        </service>
+        <service id="modig.dataset.locator.language" class="Modig\Dataset\Import\Locator\Locator">
+            <argument key="$repository" type="service" id="language.repository" />
+            <tag name="modig.dataset.locator" key="language" />
+        </service>
+        <service id="modig.dataset.locator.category" class="Modig\Dataset\Import\Locator\Category">
+            <argument key="$repository" type="service" id="category.repository" />
+            <tag name="modig.dataset.locator" key="category" />
+        </service>
+        <service id="modig.dataset.locator.folder" class="Modig\Dataset\Import\Locator\Locator">
+            <argument key="$repository" type="service" id="media_default_folder.repository" />
+            <tag name="modig.dataset.locator" key="folder" />
+        </service>
+        <service id="modig.dataset.locator.tax" class="Modig\Dataset\Import\Locator\Locator">
+            <argument key="$repository" type="service" id="tax.repository" />
+            <tag name="modig.dataset.locator" key="tax" />
+        </service>
+        <service id="modig.dataset.locator.sales_channel" class="Modig\Dataset\Import\Locator\Locator">
+            <argument key="$repository" type="service" id="sales_channel.repository" />
+            <tag name="modig.dataset.locator" key="sales_channel" />
+        </service>
+        <service id="Modig\Dataset\Import\Locator\Pool" class="Modig\Dataset\Import\Locator\Pool">
+            <argument key="$locators" type="tagged_iterator" tag="modig.dataset.locator" index-by="key" />
+        </service>
+        <!-- Persistors -->
+        <service id="modig.dataset.persistor.default" class="Modig\Dataset\Import\Persistor\DefaultPersistor">
+            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />
+        </service>
+        <service id="modig.dataset.persistor.media" class="Modig\Dataset\Import\Persistor\Media">
+            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />
+        </service>
+        <!-- Config Collectors-->
+        <service id="modig.dataset.config.collector.layout" class="Modig\Dataset\Import\ConfigCollector\Locator">
+            <argument key="$locatorKey" type="string">layout</argument>
+            <argument key="$errorMessage" type="string">Missing Or Wrong Layout Config</argument>
+            <argument key="$settingName" type="string">Category Default Layout</argument>
+            <tag name="modig.dataset.config.collector.category" key="layout" />
+        </service>
+        <service id="modig.dataset.config.collector.category" class="Modig\Dataset\Import\ConfigCollector\RootCategory">
+            <tag name="modig.dataset.config.collector.category" key="root" />
+        </service>
+        <service id="modig.dataset.config.collector.tax" class="Modig\Dataset\Import\ConfigCollector\Locator">
+            <argument key="$locatorKey" type="string">tax</argument>
+            <argument key="$errorMessage" type="string">Missing Or Wrong Tax Config</argument>
+            <argument key="$settingName" type="string">Default Tax</argument>
+            <tag name="modig.dataset.config.collector.product" key="tax" />
+        </service>
+        <service id="modig.dataset.config.collector.language" class="Modig\Dataset\Import\ConfigCollector\Locator">
+            <argument key="$locatorKey" type="string">language</argument>
+            <argument key="$errorMessage" type="string">Missing Or Wrong Language Config</argument>
+            <argument key="$settingName" type="string">Default Language</argument>
+            <tag name="modig.dataset.config.collector.category" key="language" />
+            <tag name="modig.dataset.config.collector.manufacturer" key="language" />
+            <tag name="modig.dataset.config.collector.property" key="language" />
+            <tag name="modig.dataset.config.collector.product" key="language" />
+        </service>
+        <service id="modig.dataset.config.collector.sales_channel" class="Modig\Dataset\Import\ConfigCollector\Locator">
+            <argument key="$locatorKey" type="string">sales_channel</argument>
+            <argument key="$errorMessage" type="string">Missing Sales Channel Config</argument>
+            <argument key="$settingName" type="string">Default Sales Channel</argument>
+            <tag name="modig.dataset.config.collector.product" key="sales_channel" />
+        </service>
+        <service id="modig.dataset.config.collector.stock" class="Modig\Dataset\Import\ConfigCollector\NotEmpty">
+            <argument key="$key" type="string">stock</argument>
+            <argument key="$errorMessage" type="string">Missing Default Stock Value</argument>
+            <argument key="$settingName" type="string">Default Stock QTY</argument>
+            <tag name="modig.dataset.config.collector.product" key="stock" />
+        </service>
+        <service id="modig.dataset.config.collector.source" class="Modig\Dataset\Import\ConfigCollector\Source">
+            <argument key="$key" type="string">source</argument>
+            <argument key="$errorMessage" type="string">No files to process in </argument>
+            <argument key="$settingName" type="string">Data Source</argument>
+            <tag name="modig.dataset.config.collector.product" key="source" />
+            <tag name="modig.dataset.config.collector.media" key="source" />
+            <tag name="modig.dataset.config.collector.manufacturer" key="source" />
+            <tag name="modig.dataset.config.collector.category" key="source" />
+            <tag name="modig.dataset.config.collector.property" key="source" />
+        </service>
+        <service id="modig.dataset.config.collector.media.images" class="Modig\Dataset\Import\ConfigCollector\Source">
+            <argument key="$key" type="string">images</argument>
+            <argument key="$errorMessage" type="string">No files to process in </argument>
+            <argument key="$settingName" type="string">Image Source</argument>
+            <tag name="modig.dataset.config.collector.media" key="images" />
+        </service>
+        <service id="modig.dataset.config.collector.media.folder" class="Modig\Dataset\Import\ConfigCollector\Folder">
+            <tag name="modig.dataset.config.collector.media" key="folder" />
+        </service>
+        <service id="modig.dataset.config.collector.composite.category" class="Modig\Dataset\Import\ConfigCollector\CompositeConfigCollector">
+            <argument key="$collectors" type="tagged_iterator" tag="modig.dataset.config.collector.category" index-by="key" />
+        </service>
+        <service id="modig.dataset.config.collector.composite.manufacturer" class="Modig\Dataset\Import\ConfigCollector\CompositeConfigCollector">
+            <argument key="$collectors" type="tagged_iterator" tag="modig.dataset.config.collector.manufacturer" index-by="key" />
+        </service>
+        <service id="modig.dataset.config.collector.composite.property" class="Modig\Dataset\Import\ConfigCollector\CompositeConfigCollector">
+            <argument key="$collectors" type="tagged_iterator" tag="modig.dataset.config.collector.property" index-by="key" />
+        </service>
+        <service id="modig.dataset.config.collector.composite.product" class="Modig\Dataset\Import\ConfigCollector\CompositeConfigCollector">
+            <argument key="$collectors" type="tagged_iterator" tag="modig.dataset.config.collector.product" index-by="key" />
+        </service>
+        <service id="modig.dataset.config.collector.composite.media" class="Modig\Dataset\Import\ConfigCollector\CompositeConfigCollector">
+            <argument key="$collectors" type="tagged_iterator" tag="modig.dataset.config.collector.media" index-by="key" />
+        </service>
+        <!-- Categories import -->
+        <service id="modig.dataset.import.entity.category" class="Modig\Dataset\Import\Entity\Entity">
+            <argument key="$definition" type="service" id="Shopware\Core\Content\Category\CategoryDefinition" />
+            <argument key="$persistor" type="service" id="modig.dataset.persistor.default" />
+            <argument key="$processor" type="service" id="Modig\Dataset\Import\DataProcessor\Category" />
+            <argument key="$collector" type="service" id="modig.dataset.config.collector.composite.category" />
+            <argument key="$title" type="string">Categories</argument>
+            <tag name="modig.dataset.import.entity" priority="1000" key="category" />
+        </service>
+
+        <!-- manufacturer import -->
+        <service id="modig.dataset.import.entity.manufacturer" class="Modig\Dataset\Import\Entity\Entity">
+            <argument key="$definition" type="service" id="Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerDefinition" />
+            <argument key="$persistor" type="service" id="modig.dataset.persistor.default" />
+            <argument key="$processor" type="service" id="Modig\Dataset\Import\DataProcessor\Manufacturer" />
+            <argument key="$collector" type="service" id="modig.dataset.config.collector.composite.manufacturer" />
+            <argument key="$title" type="string">Manufacturers</argument>
+            <tag name="modig.dataset.import.entity" priority="900" key="manufacturer" />
+        </service>
+        <!-- property import -->
+        <service id="modig.dataset.import.entity.property" class="Modig\Dataset\Import\Entity\Entity">
+            <argument key="$definition" type="service" id="Shopware\Core\Content\Property\PropertyGroupDefinition" />
+            <argument key="$persistor" type="service" id="modig.dataset.persistor.default" />
+            <argument key="$processor" type="service" id="Modig\Dataset\Import\DataProcessor\Property" />
+            <argument key="$collector" type="service" id="modig.dataset.config.collector.composite.property" />
+            <argument key="$title" type="string">Properties</argument>
+            <tag name="modig.dataset.import.entity" priority="800" key="property" />
+        </service>
+
+        <!-- media import -->
+        <service id="modig.dataset.import.entity.media" class="Modig\Dataset\Import\Entity\Entity">
+            <argument key="$definition" type="service" id="Shopware\Core\Content\Media\MediaDefinition" />
+            <argument key="$persistor" type="service" id="modig.dataset.persistor.media" />
+            <argument key="$processor" type="service" id="Modig\Dataset\Import\DataProcessor\Media" />
+            <argument key="$collector" type="service" id="modig.dataset.config.collector.composite.media" />
+            <argument key="$title" type="string">Media</argument>
+            <tag name="modig.dataset.import.entity" priority="700" key="media" />
+        </service>
+
+        <!-- product import -->
+        <service id="modig.dataset.import.entity.product" class="Modig\Dataset\Import\Entity\Entity">
+            <argument key="$definition" type="service" id="Shopware\Core\Content\Product\ProductDefinition" />
+            <argument key="$persistor" type="service" id="modig.dataset.persistor.default" />
+            <argument key="$processor" type="service" id="Modig\Dataset\Import\DataProcessor\Product" />
+            <argument key="$collector" type="service" id="modig.dataset.config.collector.composite.product" />
+            <argument key="$title" type="string">Product</argument>
+            <tag name="modig.dataset.import.entity" priority="600" key="product" />
+        </service>
+
+<!--        <service id="Modig\Dataset\Service\Config\Loader" />-->
+<!--        <service id="Modig\Dataset\Service\Import\Factory">-->
+<!--            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />-->
+<!--            <argument key="$definitions" type="collection">-->
+<!--                <argument key="category" type="service" id="Shopware\Core\Content\Category\CategoryDefinition" />-->
+<!--                <argument key="product" type="service" id="Shopware\Core\Content\Product\ProductDefinition" />-->
+<!--                <argument key="manufacturer" type="service" id="Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerDefinition" />-->
+<!--                <argument key="property" type="service" id="Shopware\Core\Content\Property\PropertyGroupDefinition" />-->
+<!--                <argument key="media" type="service" id="Shopware\Core\Content\Media\MediaDefinition" />-->
+<!--            </argument>-->
+<!--        </service>-->
+<!--        <service id="Modig\Dataset\Service\Config\Factory">-->
+<!--            <argument key="$categoryLocator" type="service">-->
+<!--                <service class="Modig\Dataset\Service\CategoryLocator">-->
+<!--                    <argument key="$repository" type="service" id="category.repository" />-->
+<!--                </service>-->
+<!--            </argument>-->
+<!--            <argument key="$layoutLocator" type="service">-->
+<!--                <service class="Modig\Dataset\Service\Locator">-->
+<!--                    <argument key="$repository" type="service" id="cms_page.repository" />-->
+<!--                </service>-->
+<!--            </argument>-->
+<!--            <argument key="$languageLocator" type="service">-->
+<!--                <service class="Modig\Dataset\Service\Locator">-->
+<!--                    <argument key="$repository" type="service" id="language.repository" />-->
+<!--                </service>-->
+<!--            </argument>-->
+<!--            <argument key="$taxLocator" type="service">-->
+<!--                <service class="Modig\Dataset\Service\Locator">-->
+<!--                    <argument key="$repository" type="service" id="tax.repository" />-->
+<!--                </service>-->
+<!--            </argument>-->
+<!--            <argument key="$salesChannelLocator" type="service">-->
+<!--                <service class="Modig\Dataset\Service\Locator">-->
+<!--                    <argument key="$repository" type="service" id="sales_channel.repository" />-->
+<!--                </service>-->
+<!--            </argument>-->
+<!--            <argument key="$mediaLocator" type="service">-->
+<!--                <service class="Modig\Dataset\Service\MediaLocator">-->
+<!--                    <argument key="$repository" type="service" id="media_default_folder.repository" />-->
+<!--                </service>-->
+<!--            </argument>-->
+<!--        </service>-->
+<!--        <service id="Modig\Dataset\Console\Command\Import">-->
+<!--            <tag name="console.command"/>-->
+<!--        </service>-->
+<!--        <service id="Modig\Dataset\Console\Command\ValidateConfig">-->
+<!--            <tag name="console.command"/>-->
+<!--        </service>-->
+<!--&lt;!&ndash;        <service id="Modig\Dataset\Console\Command\ImportOld" class="Modig\Dataset\Console\Command\ImportOld">&ndash;&gt;-->
+<!--&lt;!&ndash;            <tag name="console.command"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            <argument key="$types" type="tagged_iterator" tag="dataset.import.type" index-by="key" />&ndash;&gt;-->
+<!--&lt;!&ndash;        </service>&ndash;&gt;-->
+<!--        <service id="dataset.category.import" class="Modig\Dataset\Service\Categories">-->
+<!--            <argument key="$repository" type="service" id="category.repository" />-->
+<!--            <argument key="$cmsRepository" type="service" id="cms_page.repository" />-->
+<!--            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />-->
+<!--            <tag name="dataset.import.type" key="categories" />-->
+<!--        </service>-->
+<!--        <service id="dataset.property.import" class="Modig\Dataset\Service\Properties">-->
+<!--            <argument key="$repository" type="service" id="property_group.repository" />-->
+<!--&lt;!&ndash;            <argument key="$cmsRepository" type="service" id="cms_page.repository" />&ndash;&gt;-->
+<!--&lt;!&ndash;            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />&ndash;&gt;-->
+<!--            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />-->
+<!--            <tag name="dataset.import.type" key="properties" />-->
+<!--        </service>-->
+<!--        <service id="dataset.product.import" class="Modig\Dataset\Service\Products">-->
+<!--            <argument key="$repository" type="service" id="property_group.repository" />-->
+<!--            &lt;!&ndash;            <argument key="$cmsRepository" type="service" id="cms_page.repository" />&ndash;&gt;-->
+<!--            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />-->
+<!--&lt;!&ndash;            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />&ndash;&gt;-->
+<!--            <tag name="dataset.import.type" key="products" />-->
+<!--        </service>-->
+
+<!--        <service id="dataset.media.import" class="Modig\Dataset\Service\Media">-->
+<!--&lt;!&ndash;            <argument key="$repository" type="service" id="property_group.repository" />&ndash;&gt;-->
+<!--&lt;!&ndash;            &lt;!&ndash;            <argument key="$cmsRepository" type="service" id="cms_page.repository" />&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;            <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />&ndash;&gt;-->
+<!--                        <argument key="$writer" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter" />-->
+<!--            <tag name="dataset.import.type" key="media" />-->
+<!--        </service>-->
+    </services>
+</container>

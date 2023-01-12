@@ -1,0 +1,29 @@
+{
+  "name": "modig/dataset",
+  "description": "Import module for large dataset",
+  "version": "1.0.0",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Modig"
+    }
+  ],
+  "require": {
+    "shopware/core": "6.4.*"
+  },
+  "extra": {
+    "shopware-plugin-class": "Modig\\Dataset\\ModigDataset",
+    "label": {
+      "en-GB": "Modig Dataset"
+    },
+    "description": {
+      "en-GB": "Modig Dataset import"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Modig\\Dataset\\": "src/"
+    }
+  }
+}
