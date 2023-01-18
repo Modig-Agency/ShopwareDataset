@@ -1,0 +1,32 @@
+category:
+  skip: false #set to true to skip category import
+  root:
+    auto: true #auto = true means the system will look for a root category
+    #id: 1234 - you can remove the auto part and fill in a valid category UUID here
+  layout:
+    name: "Default listing layout" # name of the layout instance to be used as default
+    #id: 1234 - you can remove the name part and fill in a valid Layout UUID here
+  source: "@ModigDataset/Resources/source/15k/categories.json" #source file of the categories
+manufacturer:
+  skip: false
+  source: "@ModigDataset/Resources/source/15k/manufacturers.json"
+property:
+  skip: false
+  source: "@ModigDataset/Resources/source/15k/properties.json"
+media:
+  skip: false
+  folder:
+    entity: product
+  source: "@ModigDataset/Resources/source/15k/media/*.json"
+  images: "" #Fill in here the path to the images
+product:
+  skip: false
+  stock: 1000
+  source: "@ModigDataset/Resources/source/15k/product/product_*.json"
+  tax:
+    name: "Standard rate"
+  sales_channel:
+    name: "Storefront"
+global:
+  language:
+    name: English
