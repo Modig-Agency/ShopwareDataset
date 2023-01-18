@@ -23,20 +23,25 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Modig\Dataset\Exception\MissingConfigValueException;
 use Modig\Dataset\Import\Locator\Pool;
-use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
 class Product implements DataProcessorInterface
 {
     private Pool $locatorPool;
+    private EntityRepositoryInterface $repository;
 
     /**
      * @param Pool $locatorPool
+     * @param EntityRepositoryInterface $repository
      */
-    public function __construct(Pool $locatorPool)
+    public function __construct(Pool $locatorPool, EntityRepositoryInterface $repository)
     {
         $this->locatorPool = $locatorPool;
+        $this->repository = $repository;
     }
 
     /**
@@ -76,7 +81,11 @@ class Product implements DataProcessorInterface
         $releaseDate = new DateTimeImmutable();
         $stock = $config['stock'] ?? 10000;
         $importData = [];
+        $toSkip = $this->getIdsToSkip($data);
         foreach ($data as $product) {
+            if (in_array($product['id'], $toSkip)) {
+                continue;
+            }
             $price = $product['price'];
             $name = $product['name'];
             $description = $product['description'] ?? '';
@@ -102,13 +111,9 @@ class Product implements DataProcessorInterface
             $product['purchasePrice'] = $price;
             $product['releaseDate'] = $releaseDate;
             $product['displayInListing'] = true;
-            $product['visibilities'] = [
-                [
-                    'id' => Uuid::randomHex(),
-                    'salesChannelId' => $salesChannelId,
-                    'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
-                ],
-            ];
+            foreach ($product['visibilities'] ?? [] as $key => $visibility) {
+                $product['visibilities'][$key]['salesChannelId'] = $salesChannelId;
+            }
             if (isset($product['children'])) {
                 $product['children'] = array_map(
                     function ($child) use ($stock) {
@@ -121,5 +126,23 @@ class Product implements DataProcessorInterface
             $importData[] = $product;
         }
         return $importData;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    private function getIdsToSkip(array $data): array
+    {
+        $dataIds = array_map(
+            function (array $item) {
+                return $item['id'];
+            },
+            $data
+        );
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('id', $dataIds));
+        $resultIds = $this->repository->searchIds($criteria, Context::createDefaultContext());
+        return $resultIds->getIds();
     }
 }

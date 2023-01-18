@@ -11,7 +11,9 @@
         <service id="Modig\Dataset\Import\DataProcessor\Property" />
         <service id="Modig\Dataset\Import\DataProcessor\Category" />
         <service id="Modig\Dataset\Import\DataProcessor\Media" />
-        <service id="Modig\Dataset\Import\DataProcessor\Product" />
+        <service id="Modig\Dataset\Import\DataProcessor\Product">
+            <argument key="$repository" type="service" id="product.repository" />
+        </service>
         <service id="Modig\Dataset\Import\ImportFactory" class="Modig\Dataset\Import\ImportFactory">
             <argument key="$entities" type="tagged_iterator" tag="modig.dataset.import.entity" index-by="key"/>
         </service>
