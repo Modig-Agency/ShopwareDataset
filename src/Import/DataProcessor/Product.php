@@ -111,6 +111,7 @@ class Product implements DataProcessorInterface
             $product['purchasePrice'] = $price;
             $product['releaseDate'] = $releaseDate;
             $product['displayInListing'] = true;
+            unset($product['media'], $product['coverId']);
             foreach ($product['visibilities'] ?? [] as $key => $visibility) {
                 $product['visibilities'][$key]['salesChannelId'] = $salesChannelId;
             }
@@ -118,11 +119,20 @@ class Product implements DataProcessorInterface
                 $product['children'] = array_map(
                     function ($child) use ($stock) {
                         $child['stock'] = $stock;
+                        unset($child['media']);
+                        unset($child['coverId']);
                         return $child;
                     },
                     $product['children']
                 );
             }
+            $product['configuratorSettings'] = array_map(
+                function ($item) {
+                    unset($item['mediaId']);
+                    return $item;
+                },
+                $product['configuratorSettings'] ?? []
+            );
             $importData[] = $product;
         }
         return $importData;

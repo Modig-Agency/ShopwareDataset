@@ -6,7 +6,7 @@ category:
   layout:
     name: "Default listing layout" # name of the layout instance to be used as default
     #id: 1234 - you can remove the name part and fill in a valid Layout UUID here
-  source: "@ModigDataset/Resources/source/1k/categories.json" #source file of the categories
+  source: "@ModigDataset/Resources/source/5k/categories.json" #source file of the categories
 manufacturer:
   skip: false
   source: "@ModigDataset/Resources/source/5k/manufacturers.json"
@@ -14,11 +14,11 @@ property:
   skip: false
   source: "@ModigDataset/Resources/source/5k/properties.json"
 media:
-  skip: false
+  skip: true
   folder:
     entity: product
   source: "@ModigDataset/Resources/source/5k/media/*.json"
-  images: "" #Fill in here the path to the images
+  images: "/var/www/html/images/" #Fill in here the path to the images
 product:
   skip: false
   stock: 1000
