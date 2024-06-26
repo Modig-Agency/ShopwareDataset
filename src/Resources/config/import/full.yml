@@ -18,7 +18,7 @@ media:
   folder:
     entity: product
   source: "@ModigDataset/Resources/source/full/media/*.json"
-  images: "/var/www/html/import/" #Fill in here the path to the images
+  images: "" #Fill in here the path to the images
 product:
   skip: false
   stock: 1000
