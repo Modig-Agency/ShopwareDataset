@@ -26,49 +26,25 @@ use Modig\Dataset\Import\DataProcessor\DataProcessorInterface;
 use Modig\Dataset\Import\Entity\Entity;
 use Modig\Dataset\Import\FileLoader;
 use Modig\Dataset\Import\OutputHandler;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteContext;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[CoversClass(Entity::class)]
 class EntityTest extends TestCase
 {
-    /**
-     * @var FileLoader | MockObject
-     */
-    private FileLoader $fileLoader;
-    /**
-     * @var ConfigCollectorInterface | MockObject
-     */
-    private ConfigCollectorInterface $collector;
-    /**
-     * @var DataProcessorInterface | MockObject
-     */
-    private DataProcessorInterface $processor;
-    /**
-     * @var OutputHandler | MockObject
-     */
-    private OutputHandler $outputHandler;
-    /**
-     * @var PersistorInterface | MockObject
-     */
-    private PersistorInterface $persistor;
-    /**
-     * @var EntityDefinition | MockObject
-     */
-    private EntityDefinition $definition;
-    /**
-     * @var WriteContext | MockObject
-     */
-    private WriteContext $context;
-    /**
-     * @var OutputInterface | MockObject
-     */
-    private OutputInterface $output;
-    /**
-     * @var Entity
-     */
+    private FileLoader|MockObject $fileLoader;
+    private ConfigCollectorInterface|MockObject $collector;
+    private DataProcessorInterface|MockObject $processor;
+    private OutputHandler|MockObject $outputHandler;
+    private PersistorInterface|MockObject $persistor;
+    private EntityDefinition|MockObject $definition;
+    private WriteContext|MockObject $context;
+    private OutputInterface|MockObject $output;
     private Entity $entity;
 
     /**
@@ -95,20 +71,13 @@ class EntityTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Entity\Entity::getTitle
-     * @covers \Modig\Dataset\Import\Entity\Entity::__construct
-     */
+    #[Test]
     public function testGetTitle()
     {
         $this->assertEquals('entity', $this->entity->getTitle());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Entity\Entity::import
-     * @covers \Modig\Dataset\Import\Entity\Entity::getTitle
-     * @covers \Modig\Dataset\Import\Entity\Entity::__construct
-     */
+    #[Test]
     public function testImport()
     {
         $this->fileLoader->expects($this->once())->method('getSource')->willReturn('source');
@@ -124,11 +93,7 @@ class EntityTest extends TestCase
         $this->entity->import([], $this->context, $this->output);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Entity\Entity::import
-     * @covers \Modig\Dataset\Import\Entity\Entity::getTitle
-     * @covers \Modig\Dataset\Import\Entity\Entity::__construct
-     */
+    #[Test]
     public function testImportWithMissingSource()
     {
         $this->fileLoader->expects($this->once())->method('getSource')->willReturn(null);
@@ -136,10 +101,7 @@ class EntityTest extends TestCase
         $this->entity->import([], $this->context, $this->output);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Entity\Entity::getConfigValues
-     * @covers \Modig\Dataset\Import\Entity\Entity::__construct
-     */
+    #[Test]
     public function testGetConfigValues()
     {
         $this->collector->expects($this->once())->method('collect')->willReturn(['item']);

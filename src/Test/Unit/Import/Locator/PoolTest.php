@@ -22,17 +22,17 @@ namespace Modig\Dataset\Test\Unit\Import\Locator;
 use InvalidArgumentException;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Pool::class)]
 class PoolTest extends TestCase
 {
-    /**
-     * @var Pool
-     */
     private Pool $pool;
-
-    protected LocatorInterface $locatorOne;
-    protected LocatorInterface $locatorTwo;
+    protected LocatorInterface|MockObject $locatorOne;
+    protected LocatorInterface|MockObject $locatorTwo;
 
     /**
      * Setup tests
@@ -44,20 +44,14 @@ class PoolTest extends TestCase
         $this->pool = new Pool(['one' => $this->locatorOne, 'two' => $this->locatorTwo]);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Locator\Pool::getLocator
-     * @covers \Modig\Dataset\Import\Locator\Pool::__construct
-     */
+    #[Test]
     public function testGetLocator()
     {
         $this->assertEquals($this->locatorOne, $this->pool->getLocator("one"));
         $this->assertEquals($this->locatorTwo, $this->pool->getLocator("two"));
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Locator\Pool::getLocator
-     * @covers \Modig\Dataset\Import\Locator\Pool::__construct
-     */
+    #[Test]
     public function testGetLocatorMissingLocator()
     {
         $this->expectException(InvalidArgumentException::class);

@@ -21,14 +21,14 @@ namespace Modig\Dataset\Test\Unit\Import\ConfigCollector;
 
 use Modig\Dataset\Import\ConfigCollector\CompositeConfigCollector;
 use Modig\Dataset\Import\ConfigCollector\ConfigCollectorInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(CompositeConfigCollector::class)]
 class CompositeConfigCollectorTest extends TestCase
 {
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\CompositeConfigCollector::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\CompositeConfigCollector::__construct
-     */
+    #[Test]
     public function testCollect()
     {
         $collectorOne = $this->createMock(ConfigCollectorInterface::class);

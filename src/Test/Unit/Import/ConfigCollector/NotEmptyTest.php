@@ -20,13 +20,13 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Import\ConfigCollector;
 
 use Modig\Dataset\Import\ConfigCollector\NotEmpty;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(NotEmpty::class)]
 class NotEmptyTest extends TestCase
 {
-    /**
-     * @var NotEmpty
-     */
     private NotEmpty $notEmpty;
 
     /**
@@ -37,10 +37,7 @@ class NotEmptyTest extends TestCase
         $this->notEmpty = new NotEmpty("key", "setting", "error");
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\NotEmpty::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\NotEmpty::__construct
-     */
+    #[Test]
     public function testCollectNotValid()
     {
         $result = $this->notEmpty->collect([]);
@@ -50,10 +47,7 @@ class NotEmptyTest extends TestCase
         $this->assertFalse($result[0]->isValid());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\NotEmpty::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\NotEmpty::__construct
-     */
+    #[Test]
     public function testCollect()
     {
         $result = $this->notEmpty->collect(['key' => 'data']);

@@ -20,13 +20,13 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Import;
 
 use Modig\Dataset\Import\ConfigItem;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(ConfigItem::class)]
 class ConfigItemTest extends TestCase
 {
-    /**
-     * @var ConfigItem
-     */
     private ConfigItem $configItem;
 
     /**
@@ -37,28 +37,19 @@ class ConfigItemTest extends TestCase
         $this->configItem = new ConfigItem("label", "value", true);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigItem::getLabel
-     * @covers \Modig\Dataset\Import\ConfigItem::__construct
-     */
+    #[Test]
     public function testGetLabel()
     {
         $this->assertEquals('label', $this->configItem->getLabel());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigItem::getValue
-     * @covers \Modig\Dataset\Import\ConfigItem::__construct
-     */
+    #[Test]
     public function testGetValue()
     {
         $this->assertEquals('value', $this->configItem->getValue());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigItem::isValid
-     * @covers \Modig\Dataset\Import\ConfigItem::__construct
-     */
+    #[Test]
     public function testIsValid()
     {
         $this->assertTrue($this->configItem->isValid());

@@ -23,22 +23,18 @@ use InvalidArgumentException;
 use Modig\Dataset\Import\ConfigCollector\Folder;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Media\Aggregate\MediaDefaultFolder\MediaDefaultFolderEntity;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderEntity;
 
+#[CoversClass(Folder::class)]
 class FolderTest extends TestCase
 {
-    /**
-     * @var Pool | MockObject
-     */
-    private Pool $pool;
-    /**
-     * @var Folder
-     */
+    private Pool|MockObject $pool;
     private Folder $folder;
-
     private LocatorInterface $entityLocator;
 
     /**
@@ -51,10 +47,7 @@ class FolderTest extends TestCase
         $this->folder = new Folder($this->pool);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Folder::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Folder::__construct
-     */
+    #[Test]
     public function testCollect()
     {
         $this->pool->expects($this->once())->method('getLocator')->willReturn($this->entityLocator);
@@ -71,10 +64,7 @@ class FolderTest extends TestCase
         $this->assertTrue($result[0]->isValid());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Folder::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Folder::__construct
-     */
+    #[Test]
     public function testCollectMissingFolder()
     {
         $this->pool->expects($this->once())->method('getLocator')->willReturn($this->entityLocator);
@@ -88,10 +78,7 @@ class FolderTest extends TestCase
         $this->assertFalse($result[0]->isValid());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Folder::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Folder::__construct
-     */
+    #[Test]
     public function testCollectMissingDefaultFolder()
     {
         $this->pool->expects($this->once())->method('getLocator')->willReturn($this->entityLocator);
@@ -103,10 +90,7 @@ class FolderTest extends TestCase
         $this->assertFalse($result[0]->isValid());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Folder::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Folder::__construct
-     */
+    #[Test]
     public function testCollectMissingLocator()
     {
         $this->pool->expects($this->once())->method('getLocator')

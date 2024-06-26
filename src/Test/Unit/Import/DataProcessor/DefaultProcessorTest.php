@@ -20,13 +20,14 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Import\DataProcessor;
 
 use Modig\Dataset\Import\DataProcessor\DefaultProcessor;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(DefaultProcessor::class)]
 class DefaultProcessorTest extends TestCase
 {
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\DefaultProcessor::process
-     */
+    #[Test]
     public function testProcess()
     {
         $processor = new DefaultProcessor();

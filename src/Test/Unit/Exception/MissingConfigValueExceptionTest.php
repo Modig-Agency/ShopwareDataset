@@ -20,13 +20,14 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Exception;
 
 use Modig\Dataset\Exception\MissingConfigValueException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(MissingConfigValueException::class)]
 class MissingConfigValueExceptionTest extends TestCase
 {
-    /**
-     * @covers \Modig\Dataset\Exception\MissingConfigValueException::__construct()
-     */
+    #[Test]
     public function testConstruct()
     {
         $exception = new MissingConfigValueException("setting", 'import');

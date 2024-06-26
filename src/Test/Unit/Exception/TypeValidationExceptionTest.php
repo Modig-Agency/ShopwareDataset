@@ -20,14 +20,15 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Exception;
 
 use Modig\Dataset\Exception\TypeValidationException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+#[CoversClass(TypeValidationException::class)]
 class TypeValidationExceptionTest extends TestCase
 {
-    /**
-     * @covers \Modig\Dataset\Exception\TypeValidationException::__construct()
-     */
+    #[Test]
     public function testConstruct()
     {
         $exception = new TypeValidationException("classname", 'expected', []);
@@ -35,9 +36,7 @@ class TypeValidationExceptionTest extends TestCase
         $this->assertEquals($expected, $exception->getMessage());
     }
 
-    /**
-     * @covers \Modig\Dataset\Exception\TypeValidationException::__construct()
-     */
+    #[Test]
     public function testConstructWithObject()
     {
         $exception = new TypeValidationException("classname", 'expected', new stdClass());

@@ -24,6 +24,9 @@ use Modig\Dataset\Exception\MissingConfigValueException;
 use Modig\Dataset\Import\DataProcessor\Category;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -31,15 +34,10 @@ use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\System\Language\LanguageEntity;
 
+#[CoversClass(Category::class)]
 class CategoryTest extends TestCase
 {
-    /**
-     * @var Pool | MockObject
-     */
-    private Pool $locatorPool;
-    /**
-     * @var Category
-     */
+    private Pool|MockObject $locatorPool;
     private Category $category;
 
     /**
@@ -51,10 +49,7 @@ class CategoryTest extends TestCase
         $this->category = new Category($this->locatorPool);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::__construct
-     */
+    #[Test]
     public function testProcessWithLayoutLocatorException()
     {
         $this->locatorPool->expects($this->once())->method('getLocator')
@@ -63,10 +58,7 @@ class CategoryTest extends TestCase
         $this->category->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::__construct
-     */
+    #[Test]
     public function testProcessWithMissingLayout()
     {
         $this->locatorPool->expects($this->once())->method('getLocator')->willReturn($this->getLocatorMock(null));
@@ -74,50 +66,57 @@ class CategoryTest extends TestCase
         $this->category->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::__construct
-     */
+    #[Test]
     public function testProcessWithLanguageLocatorException()
     {
+        $exception = $this->createMock(InvalidArgumentException::class);
+        $response = $this->getLocatorMock($this->getLayoutMock());
+        $counter = 0;
         $this->locatorPool->expects($this->exactly(2))->method('getLocator')
-            ->will($this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getLayoutMock()),
-                $this->throwException($this->createMock(InvalidArgumentException::class))
-            ));
+            ->willReturnCallback(
+                function () use (&$counter, $exception, $response) {
+                    $counter++;
+                    if ($counter === 2) {
+                        throw $exception;
+                    }
+                    return $response;
+                }
+            );
         $this->expectException(MissingConfigValueException::class);
         $this->category->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::__construct
-     */
+    #[Test]
     public function testProcessWithMissingLanguage()
     {
         $this->locatorPool->expects($this->exactly(2))->method('getLocator')
-            ->will($this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getLayoutMock()),
-                $this->getLocatorMock(null)
-            ));
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    return $counter === 1
+                        ? $this->getLocatorMock($this->getLayoutMock())
+                        : $this->getLocatorMock(null);
+                }
+            );
         $this->expectException(MissingConfigValueException::class);
         $this->category->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::buildTree
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::getGeneratedRoot
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::__construct
-     */
+    #[Test]
     public function testProcessWithCategoryLocatorException()
     {
+        $counter = 0;
         $this->locatorPool->expects($this->exactly(3))->method('getLocator')
-            ->will($this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getLayoutMock()),
-                $this->getLocatorMock($this->getLanguageMock()),
-                $this->throwException($this->createMock(InvalidArgumentException::class))
-            ));
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    return match ($counter) {
+                        1 => $this->getLocatorMock($this->getLayoutMock()),
+                        2 => $this->getLocatorMock($this->getLanguageMock()),
+                        default => throw $this->createMock(InvalidArgumentException::class),
+                    };
+                }
+            );
         $result = $this->category->process($this->getCategoryData(), []);
         $this->assertCount(1, $result);
         $this->assertEquals(['language_id' => 'Root'], $result[0]['name']);
@@ -125,20 +124,21 @@ class CategoryTest extends TestCase
         $this->assertEquals($this->getExpectedTree(), $result[0]['children']);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::buildTree
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::getGeneratedRoot
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::__construct
-     */
+    #[Test]
     public function testProcessWithNoRootSpecified()
     {
+        $counter = 0;
         $this->locatorPool->expects($this->exactly(3))->method('getLocator')
-            ->will($this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getLayoutMock()),
-                $this->getLocatorMock($this->getLanguageMock()),
-                $this->getLocatorMock(null),
-            ));
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    return match ($counter) {
+                        1 => $this->getLocatorMock($this->getLayoutMock()),
+                        2 => $this->getLocatorMock($this->getLanguageMock()),
+                        default => $this->getLocatorMock(null),
+                    };
+                }
+            );
         $result = $this->category->process($this->getCategoryData(), []);
         $this->assertCount(1, $result);
         $this->assertEquals(['language_id' => 'Root'], $result[0]['name']);
@@ -146,19 +146,21 @@ class CategoryTest extends TestCase
         $this->assertEquals($this->getExpectedTree(), $result[0]['children']);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::buildTree
-     * @covers \Modig\Dataset\Import\DataProcessor\Category::__construct
-     */
+    #[Test]
     public function testProcessWithRoot()
     {
+        $counter = 0;
         $this->locatorPool->expects($this->exactly(3))->method('getLocator')
-            ->will($this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getLayoutMock()),
-                $this->getLocatorMock($this->getLanguageMock()),
-                $this->getLocatorMock($this->getCategoryMock()),
-            ));
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    return match ($counter) {
+                        1 => $this->getLocatorMock($this->getLayoutMock()),
+                        2 => $this->getLocatorMock($this->getLanguageMock()),
+                        default => $this->getLocatorMock($this->getCategoryMock()),
+                    };
+                }
+            );
         $expected = [
             [
                 'id' => 'category_id',
@@ -173,9 +175,10 @@ class CategoryTest extends TestCase
     }
 
     /**
-     * @return MockObject|CategoryEntity
+     * @return CategoryEntity|MockObject
+     * @throws Exception
      */
-    private function getCategoryMock(): CategoryEntity
+    private function getCategoryMock(): CategoryEntity|MockObject
     {
         $mock = $this->createMock(CategoryEntity::class);
         $mock->method('getName')->willReturn('Root category');
@@ -267,8 +270,9 @@ class CategoryTest extends TestCase
     /**
      * @param Entity|null $result
      * @return LocatorInterface|MockObject
+     * @throws Exception
      */
-    private function getLocatorMock(?Entity $result)
+    private function getLocatorMock(?Entity $result): MockObject|LocatorInterface
     {
         $mock = $this->createMock(LocatorInterface::class);
         $mock->method('locate')->willReturn($result);
@@ -276,9 +280,10 @@ class CategoryTest extends TestCase
     }
 
     /**
-     * @return MockObject|CmsPageEntity
+     * @return CmsPageEntity|MockObject
+     * @throws Exception
      */
-    private function getLayoutMock(): CmsPageEntity
+    private function getLayoutMock(): CmsPageEntity|MockObject
     {
         $mock = $this->createMock(CmsPageEntity::class);
         $mock->method('getId')->willReturn('layout_id');
@@ -287,8 +292,9 @@ class CategoryTest extends TestCase
 
     /**
      * @return MockObject|LanguageEntity
+     * @throws Exception
      */
-    private function getLanguageMock()
+    private function getLanguageMock(): LanguageEntity|MockObject
     {
         $mock = $this->createMock(LanguageEntity::class);
         $mock->method('getId')->willReturn('language_id');

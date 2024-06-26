@@ -15,33 +15,27 @@
  * @author    Modig Agency <http://www.modigagency.com/>
  */
  -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
-         bootstrap="./src/TestBootstrap.php"
-         cacheResult="false">
-
-    <php>
-        <ini name="error_reporting" value="-1"/>
-        <env name="APP_ENV" value="test"/>
-        <env name="APP_DEBUG" value="1"/>
-        <env name="SHELL_VERBOSITY" value="1"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
-    </php>
-
-    <testsuites>
-        <testsuite name="Unit">
-            <directory>src/Test/Unit</directory>
-        </testsuite>
-    </testsuites>
-
-    <coverage>
-        <include>
-            <directory suffix=".php">./</directory>
-        </include>
-        <exclude>
-            <directory>src/Test</directory>
-            <file>src/ModigDataset.php</file>
-            <file>src/TestBootstrap.php</file>
-        </exclude>
-    </coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.1/phpunit.xsd" bootstrap="./src/TestBootstrap.php" cacheResult="false">
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <env name="APP_ENV" value="test"/>
+    <env name="APP_DEBUG" value="1"/>
+    <env name="SHELL_VERBOSITY" value="1"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
+  </php>
+  <testsuites>
+    <testsuite name="Unit">
+      <directory>src/Test/Unit</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory suffix=".php">./</directory>
+    </include>
+    <exclude>
+      <directory>src/Test</directory>
+      <file>src/ModigDataset.php</file>
+      <file>src/TestBootstrap.php</file>
+    </exclude>
+  </source>
 </phpunit>

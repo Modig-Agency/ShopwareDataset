@@ -21,18 +21,15 @@ namespace Modig\Dataset\Test\Unit\Import\ConfigCollector;
 
 use Modig\Dataset\Import\ConfigCollector\Source;
 use Modig\Dataset\Import\FileLoader;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Source::class)]
 class SourceTest extends TestCase
 {
-    /**
-     * @var FileLoader | MockObject
-     */
-    private FileLoader $fileLoader;
-    /**
-     * @var Source
-     */
+    private FileLoader|MockObject $fileLoader;
     private Source $source;
 
     /**
@@ -44,10 +41,7 @@ class SourceTest extends TestCase
         $this->source = new Source($this->fileLoader, "key", "error", "setting");
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Source::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Source::__construct
-     */
+    #[Test]
     public function testCollect()
     {
         $this->fileLoader->expects($this->once())->method('getSource')
@@ -59,10 +53,7 @@ class SourceTest extends TestCase
         $this->assertEquals('setting', $result[0]->getLabel());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Source::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Source::__construct
-     */
+    #[Test]
     public function testCollectNotValid()
     {
         $this->fileLoader->expects($this->once())->method('getSource')

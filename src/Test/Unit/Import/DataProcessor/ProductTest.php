@@ -24,32 +24,24 @@ use Modig\Dataset\Exception\MissingConfigValueException;
 use Modig\Dataset\Import\DataProcessor\Product;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxEntity;
 
+#[CoversClass(Product::class)]
 class ProductTest extends TestCase
 {
-    /**
-     * @var Pool | MockObject
-     */
-    private Pool $locatorPool;
-    /**
-     * @var EntityRepositoryInterface | MockObject
-     */
-    private EntityRepositoryInterface $repository;
-    /**
-     * @var IdSearchResult | MockObject
-     */
-    private IdSearchResult $idsSearch;
-    /**
-     * @var Product
-     */
+    private Pool|MockObject $locatorPool;
+    private EntityRepository|MockObject $repository;
+    private IdSearchResult|MockObject $idsSearch;
     private Product $product;
 
     /**
@@ -58,15 +50,12 @@ class ProductTest extends TestCase
     protected function setUp(): void
     {
         $this->locatorPool = $this->createMock(Pool::class);
-        $this->repository = $this->createMock(EntityRepositoryInterface::class);
+        $this->repository = $this->createMock(EntityRepository::class);
         $this->idsSearch = $this->createMock(IdSearchResult::class);
         $this->product = new Product($this->locatorPool, $this->repository);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::__construct
-     */
+    #[Test]
     public function testProcessWithTaxLocatorException()
     {
         $this->repository->expects($this->never())->method('searchIds');
@@ -76,10 +65,7 @@ class ProductTest extends TestCase
         $this->product->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::__construct
-     */
+    #[Test]
     public function testProcessWithNoTax()
     {
         $this->repository->expects($this->never())->method('searchIds');
@@ -88,91 +74,95 @@ class ProductTest extends TestCase
         $this->product->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::__construct
-     */
+    #[Test]
     public function testProcessWithLanguageLocatorException()
     {
+        $counter = 0;
         $this->repository->expects($this->never())->method('searchIds');
-        $this->locatorPool->expects($this->exactly(2))->method('getLocator')->will(
-            $this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getTaxMock()),
-                $this->throwException($this->createMock(InvalidArgumentException::class))
-            )
-        );
+        $this->locatorPool->expects($this->exactly(2))->method('getLocator')
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    if ($counter === 1) {
+                        return $this->getLocatorMock($this->getTaxMock());
+                    }
+                    throw $this->createMock(InvalidArgumentException::class);
+                }
+            );
         $this->expectException(MissingConfigValueException::class);
         $this->product->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::__construct
-     */
+    #[Test]
     public function testProcessWithMissingLanguage()
     {
         $this->repository->expects($this->never())->method('searchIds');
-        $this->locatorPool->expects($this->exactly(2))->method('getLocator')->will(
-            $this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getTaxMock()),
-                $this->getLocatorMock(null)
-            )
-        );
+        $this->locatorPool->expects($this->exactly(2))->method('getLocator')
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    return $counter === 1
+                        ? $this->getLocatorMock($this->getTaxMock())
+                        : $this->getLocatorMock(null);
+                }
+            );
         $this->expectException(MissingConfigValueException::class);
         $this->product->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::__construct
-     */
+    #[Test]
     public function testProcessWithSalesChannelLocatorException()
     {
         $this->repository->expects($this->never())->method('searchIds');
-        $this->locatorPool->expects($this->exactly(3))->method('getLocator')->will(
-            $this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getTaxMock()),
-                $this->getLocatorMock($this->getLanguageMock()),
-                $this->throwException($this->createMock(InvalidArgumentException::class))
-            )
-        );
+        $this->locatorPool->expects($this->exactly(3))->method('getLocator')
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    return match ($counter) {
+                        1 => $this->getLocatorMock($this->getTaxMock()),
+                        2 => $this->getLocatorMock($this->getLanguageMock()),
+                        default => throw $this->createMock(InvalidArgumentException::class),
+                    };
+                }
+            );
         $this->expectException(MissingConfigValueException::class);
         $this->product->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::__construct
-     */
+    #[Test]
     public function testProcessWithMissingSalesChannel()
     {
         $this->repository->expects($this->never())->method('searchIds');
-        $this->locatorPool->expects($this->exactly(3))->method('getLocator')->will(
-            $this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getTaxMock()),
-                $this->getLocatorMock($this->getLanguageMock()),
-                $this->getLocatorMock(null)
-            )
-        );
+        $this->locatorPool->expects($this->exactly(3))->method('getLocator')
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    return match ($counter) {
+                        1 => $this->getLocatorMock($this->getTaxMock()),
+                        2 => $this->getLocatorMock($this->getLanguageMock()),
+                        default => $this->getLocatorMock(null),
+                    };
+                }
+            );
         $this->expectException(MissingConfigValueException::class);
         $this->product->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::getIdsToSkip
-     * @covers \Modig\Dataset\Import\DataProcessor\Product::__construct
-     */
+    #[Test]
     public function testProcess()
     {
         $this->repository->method('searchIds')->willReturn($this->idsSearch);
-        $this->locatorPool->expects($this->exactly(3))->method('getLocator')->will(
-            $this->onConsecutiveCalls(
-                $this->getLocatorMock($this->getTaxMock()),
-                $this->getLocatorMock($this->getLanguageMock()),
-                $this->getLocatorMock($this->getSalesChannelMock())
-            )
-        );
+        $this->locatorPool->expects($this->exactly(3))->method('getLocator')
+            ->willReturnCallback(
+                function () use (&$counter) {
+                    $counter++;
+                    return match ($counter) {
+                        1 => $this->getLocatorMock($this->getTaxMock()),
+                        2 => $this->getLocatorMock($this->getLanguageMock()),
+                        default => $this->getLocatorMock($this->getSalesChannelMock()),
+                    };
+                }
+            );
 
         $productData = [
             [
@@ -222,10 +212,7 @@ class ProductTest extends TestCase
         $this->assertArrayNotHasKey('children', $result[1]);
     }
 
-    /**
-     * @param Entity|null $result
-     * @return mixed|LocatorInterface|MockObject
-     */
+    #[Test]
     private function getLocatorMock(?Entity $result)
     {
         $mock = $this->createMock(LocatorInterface::class);
@@ -234,9 +221,10 @@ class ProductTest extends TestCase
     }
 
     /**
-     * @return mixed|MockObject|TaxEntity
+     * @return MockObject|TaxEntity
+     * @throws Exception
      */
-    private function getTaxMock()
+    private function getTaxMock(): MockObject|TaxEntity
     {
         $mock = $this->createMock(TaxEntity::class);
         $mock->method('getId')->willReturn('id');
@@ -246,8 +234,9 @@ class ProductTest extends TestCase
 
     /**
      * @return MockObject|LanguageEntity
+     * @throws Exception
      */
-    private function getLanguageMock(): LanguageEntity
+    private function getLanguageMock(): LanguageEntity|MockObject
     {
         $mock = $this->createMock(LanguageEntity::class);
         $mock->method('getId')->willReturn('language_id');
@@ -256,8 +245,9 @@ class ProductTest extends TestCase
 
     /**
      * @return MockObject|SalesChannelEntity
+     * @throws Exception
      */
-    private function getSalesChannelMock(): SalesChannelEntity
+    private function getSalesChannelMock(): SalesChannelEntity|MockObject
     {
         $mock = $this->createMock(SalesChannelEntity::class);
         $mock->method('getId')->willReturn('sales_channel_id');

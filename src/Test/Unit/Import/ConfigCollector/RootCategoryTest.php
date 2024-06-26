@@ -23,24 +23,18 @@ use InvalidArgumentException;
 use Modig\Dataset\Import\ConfigCollector\RootCategory;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Category\CategoryEntity;
 
+#[CoversClass(RootCategory::class)]
 class RootCategoryTest extends TestCase
 {
-    /**
-     * @var Pool | MockObject
-     */
-    private Pool $pool;
-    /**
-     * @var RootCategory
-     */
+    private Pool|MockObject $pool;
     private RootCategory $rootCategory;
-    /**
-     * @var LocatorInterface | MockObject
-     */
-    private LocatorInterface $entityLocator;
+    private LocatorInterface|MockObject $entityLocator;
 
     /**
      * Setup tests
@@ -52,10 +46,7 @@ class RootCategoryTest extends TestCase
         $this->rootCategory = new RootCategory($this->pool);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\RootCategory::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\RootCategory::__construct
-     */
+    #[Test]
     public function testCollect()
     {
         $this->pool->expects($this->once())->method('getLocator')->willReturn($this->entityLocator);
@@ -70,10 +61,7 @@ class RootCategoryTest extends TestCase
         $this->assertTrue($result[0]->isValid());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\RootCategory::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\RootCategory::__construct
-     */
+    #[Test]
     public function testCollectNoCategory()
     {
         $this->pool->expects($this->once())->method('getLocator')->willReturn($this->entityLocator);
@@ -85,10 +73,7 @@ class RootCategoryTest extends TestCase
         $this->assertTrue($result[0]->isValid());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\RootCategory::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\RootCategory::__construct
-     */
+    #[Test]
     public function testCollectWithException()
     {
         $this->pool->expects($this->once())->method('getLocator')

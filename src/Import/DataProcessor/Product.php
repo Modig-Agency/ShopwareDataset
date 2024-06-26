@@ -25,20 +25,20 @@ use Modig\Dataset\Exception\MissingConfigValueException;
 use Modig\Dataset\Import\Locator\Pool;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
 class Product implements DataProcessorInterface
 {
     private Pool $locatorPool;
-    private EntityRepositoryInterface $repository;
+    private EntityRepository $repository;
 
     /**
      * @param Pool $locatorPool
-     * @param EntityRepositoryInterface $repository
+     * @param EntityRepository $repository
      */
-    public function __construct(Pool $locatorPool, EntityRepositoryInterface $repository)
+    public function __construct(Pool $locatorPool, EntityRepository $repository)
     {
         $this->locatorPool = $locatorPool;
         $this->repository = $repository;
