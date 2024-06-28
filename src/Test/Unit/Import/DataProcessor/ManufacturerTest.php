@@ -23,24 +23,18 @@ use Modig\Dataset\Exception\MissingConfigValueException;
 use Modig\Dataset\Import\DataProcessor\Manufacturer;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\Language\LanguageEntity;
 
+#[CoversClass(Manufacturer::class)]
 class ManufacturerTest extends TestCase
 {
-    /**
-     * @var Pool | MockObject
-     */
-    private Pool $locatorPool;
-    /**
-     * @var Manufacturer
-     */
+    private Pool|MockObject $locatorPool;
     private Manufacturer $manufacturer;
-    /**
-     * @var LocatorInterface  | MockObject
-     */
-    private LocatorInterface $locator;
+    private LocatorInterface|MockObject $locator;
 
     /**
      * Setup tests
@@ -52,10 +46,7 @@ class ManufacturerTest extends TestCase
         $this->locator = $this->createMock(LocatorInterface::class);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Manufacturer::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Manufacturer::__construct
-     */
+    #[Test]
     public function testProcessWithMissingLanguage()
     {
         $this->locator->method('locate')->willReturn(null);
@@ -64,10 +55,7 @@ class ManufacturerTest extends TestCase
         $this->manufacturer->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Manufacturer::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Manufacturer::__construct
-     */
+    #[Test]
     public function testProcessWithLocatorException()
     {
         $this->locatorPool->method('getLocator')
@@ -76,10 +64,7 @@ class ManufacturerTest extends TestCase
         $this->manufacturer->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Manufacturer::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Manufacturer::__construct
-     */
+    #[Test]
     public function testProcess()
     {
         $language = $this->createMock(LanguageEntity::class);

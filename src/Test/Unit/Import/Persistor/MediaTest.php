@@ -20,19 +20,18 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Import\Persistor;
 
 use Modig\Dataset\Import\Persistor\Media;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriterInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteContext;
 
+#[CoversClass(Media::class)]
 class MediaTest extends TestCase
 {
-    /**
-     * @covers \Modig\Dataset\Import\Persistor\Media::persist
-     * @covers \Modig\Dataset\Import\Persistor\Media::getImageSaveContext
-     * @covers \Modig\Dataset\Import\Persistor\Media::__construct
-     */
+    #[Test]
     public function testPersist()
     {
         $writer = $this->createMock(EntityWriterInterface::class);

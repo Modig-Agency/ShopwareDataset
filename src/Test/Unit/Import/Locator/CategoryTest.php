@@ -20,40 +20,32 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Import\Locator;
 
 use Modig\Dataset\Import\Locator\Category;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 
+#[CoversClass(Category::class)]
 class CategoryTest extends TestCase
 {
-    /**
-     * @var EntityRepositoryInterface | MockObject
-     */
-    private EntityRepositoryInterface $repository;
-    /**
-     * @var Category
-     */
+    private EntityRepository|MockObject $repository;
     private Category $locator;
-    /**
-     * @var EntitySearchResult | MockObject
-     */
-    private EntitySearchResult $searchResult;
+    private EntitySearchResult|MockObject $searchResult;
 
     /**
      * Setup tests
      */
     protected function setUp(): void
     {
-        $this->repository = $this->createMock(EntityRepositoryInterface::class);
+        $this->repository = $this->createMock(EntityRepository::class);
         $this->locator = new Category($this->repository);
         $this->searchResult = $this->createMock(EntitySearchResult::class);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Locator\Category::locate
-     */
+    #[Test]
     public function testLocateWithValidId()
     {
         $this->repository->expects($this->once())->method('search')->willReturn($this->searchResult);
@@ -65,9 +57,7 @@ class CategoryTest extends TestCase
         $this->assertEquals($entity, $this->locator->locate(['id' => 'id']));
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Locator\Category::locate
-     */
+    #[Test]
     public function testLocateWithoutId()
     {
         $this->repository->expects($this->once())->method('search')->willReturn($this->searchResult);

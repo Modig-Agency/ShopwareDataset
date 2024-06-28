@@ -23,25 +23,19 @@ use Modig\Dataset\Exception\MissingConfigValueException;
 use Modig\Dataset\Import\DataProcessor\Media;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Media\Aggregate\MediaDefaultFolder\MediaDefaultFolderEntity;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderEntity;
 
+#[CoversClass(Media::class)]
 class MediaTest extends TestCase
 {
-    /**
-     * @var Pool | MockObject
-     */
-    private Pool $locatorPool;
-    /**
-     * @var Media
-     */
+    private Pool|MockObject $locatorPool;
     private Media $media;
-    /**
-     * @var LocatorInterface | MockObject
-     */
-    private LocatorInterface $locator;
+    private LocatorInterface|MockObject $locator;
 
     /**
      * Setup tests
@@ -53,10 +47,7 @@ class MediaTest extends TestCase
         $this->locator = $this->createMock(LocatorInterface::class);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Media::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Media::__construct
-     */
+    #[Test]
     public function testProcessWithMissingMediaFolder()
     {
         $this->locatorPool->method('getLocator')->willReturn($this->locator);
@@ -65,10 +56,7 @@ class MediaTest extends TestCase
         $this->media->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Media::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Media::__construct
-     */
+    #[Test]
     public function testProcessWithLocatorException()
     {
         $this->locatorPool->method('getLocator')
@@ -77,10 +65,7 @@ class MediaTest extends TestCase
         $this->media->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Media::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Media::__construct
-     */
+    #[Test]
     public function testProcessWithMissingImagesSource()
     {
         $this->locatorPool->method('getLocator')->willReturn($this->locator);
@@ -90,10 +75,7 @@ class MediaTest extends TestCase
         $this->media->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Media::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Media::__construct
-     */
+    #[Test]
     public function testProcess()
     {
         $this->locatorPool->method('getLocator')->willReturn($this->locator);

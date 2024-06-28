@@ -23,24 +23,18 @@ use Modig\Dataset\Exception\MissingConfigValueException;
 use Modig\Dataset\Import\DataProcessor\Property;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\Language\LanguageEntity;
 
+#[CoversClass(Property::class)]
 class PropertyTest extends TestCase
 {
-    /**
-     * @var Pool | MockObject
-     */
-    private Pool $locatorPool;
-    /**
-     * @var Property
-     */
+    private Pool|MockObject $locatorPool;
     private Property $property;
-    /**
-     * @var LocatorInterface  | MockObject
-     */
-    private LocatorInterface $locator;
+    private LocatorInterface|MockObject $locator;
 
     /**
      * Setup tests
@@ -52,10 +46,7 @@ class PropertyTest extends TestCase
         $this->locator = $this->createMock(LocatorInterface::class);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Property::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Property::__construct
-     */
+    #[Test]
     public function testProcessWithMissingLanguage()
     {
         $this->locator->method('locate')->willReturn(null);
@@ -64,10 +55,7 @@ class PropertyTest extends TestCase
         $this->property->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Property::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Property::__construct
-     */
+    #[Test]
     public function testProcessWithLocatorException()
     {
         $this->locatorPool->method('getLocator')
@@ -76,10 +64,7 @@ class PropertyTest extends TestCase
         $this->property->process([], []);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\DataProcessor\Property::process
-     * @covers \Modig\Dataset\Import\DataProcessor\Property::__construct
-     */
+    #[Test]
     public function testProcess()
     {
         $language = $this->createMock(LanguageEntity::class);

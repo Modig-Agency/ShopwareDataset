@@ -21,20 +21,20 @@ namespace Modig\Dataset\Import\Locator;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class Locator implements LocatorInterface
 {
-    private EntityRepositoryInterface $repository;
+    private EntityRepository $repository;
     private array $loadedValues = [];
     private ?Context $context = null;
 
     /**
-     * @param EntityRepositoryInterface $repository
+     * @param EntityRepository $repository
      */
-    public function __construct(EntityRepositoryInterface $repository)
+    public function __construct(EntityRepository $repository)
     {
         $this->repository = $repository;
     }

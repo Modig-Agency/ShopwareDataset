@@ -21,23 +21,22 @@ namespace Modig\Dataset\Test\Unit\Validator;
 
 use Modig\Dataset\Exception\TypeValidationException;
 use Modig\Dataset\Validator\ArrayTypeValidator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+#[CoversClass(ArrayTypeValidator::class)]
 class ArrayTypeValidatorTest extends TestCase
 {
-    /**
-     * @covers \Modig\Dataset\Validator\ArrayTypeValidator::getValid
-     */
+    #[Test]
     public function testGetValid()
     {
         $elements = [new stdClass(), new stdClass()];
         $this->assertEquals($elements, ArrayTypeValidator::getValid($elements, stdClass::class, 'caller'));
     }
 
-    /**
-     * @covers \Modig\Dataset\Validator\ArrayTypeValidator::getValid
-     */
+    #[Test]
     public function testGetValidWithWrongData()
     {
         $elements = [new stdClass(), []];

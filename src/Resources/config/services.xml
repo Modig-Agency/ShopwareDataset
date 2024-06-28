@@ -21,6 +21,7 @@
             <argument key="$importFactory" type="service" id="Modig\Dataset\Import\ImportFactory" />
             <tag name="console.command"/>
         </service>
+
         <!-- Locators -->
         <service id="modig.dataset.locator.layout" class="Modig\Dataset\Import\Locator\Locator">
             <argument key="$repository" type="service" id="cms_page.repository" />

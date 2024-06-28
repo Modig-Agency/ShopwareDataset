@@ -23,31 +23,21 @@ use Modig\Dataset\Console\Command\Import;
 use Modig\Dataset\Import\ConfigItem;
 use Modig\Dataset\Import\Import as ImportInstance;
 use Modig\Dataset\Import\ImportFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[CoversClass(Import::class)]
 class ImportTest extends TestCase
 {
-    /**
-     * @var ImportFactory | MockObject
-     */
-    private ImportFactory $importFactory;
-    /**
-     * @var InputInterface | MockObject
-     */
-    private InputInterface $input;
-    /**
-     * @var OutputInterface | MockObject
-     */
-    private OutputInterface $output;
-    /**
-     * @var Import
-     */
+    private ImportFactory|MockObject $importFactory;
+    private InputInterface|MockObject $input;
+    private OutputInterface|MockObject $output;
     private Import $importCommand;
-
     private ImportInstance $import;
 
     /**
@@ -62,11 +52,7 @@ class ImportTest extends TestCase
         $this->importCommand = new Import($this->importFactory);
     }
 
-    /**
-     * @covers \Modig\Dataset\Console\Command\Import::execute
-     * @covers \Modig\Dataset\Console\Command\Import::configure
-     * @covers \Modig\Dataset\Console\Command\Import::__construct
-     */
+    #[Test]
     public function testExecuteWithValidConfigAndRunOption()
     {
         $this->input->method('getArgument')->willReturn('file');
@@ -78,11 +64,7 @@ class ImportTest extends TestCase
         $this->assertEquals(0, $this->importCommand->run($this->input, $this->output));
     }
 
-    /**
-     * @covers \Modig\Dataset\Console\Command\Import::execute
-     * @covers \Modig\Dataset\Console\Command\Import::configure
-     * @covers \Modig\Dataset\Console\Command\Import::__construct
-     */
+    #[Test]
     public function testExecuteWithNotValidConfigAndRunOption()
     {
         $this->input->method('getArgument')->willReturn('file');
@@ -96,13 +78,7 @@ class ImportTest extends TestCase
         $this->assertEquals(1, $this->importCommand->run($this->input, $this->output));
     }
 
-    /**
-     * @covers \Modig\Dataset\Console\Command\Import::execute
-     * @covers \Modig\Dataset\Console\Command\Import::configure
-     * @covers \Modig\Dataset\Console\Command\Import::getConfigValidMessage
-     * @covers \Modig\Dataset\Console\Command\Import::getConfigTable
-     * @covers \Modig\Dataset\Console\Command\Import::__construct
-     */
+    #[Test]
     public function testExecuteWithValidConfigAndNoRunOption()
     {
         $this->input->method('getArgument')->willReturn('file');
@@ -120,13 +96,7 @@ class ImportTest extends TestCase
         $this->assertEquals(0, $this->importCommand->run($this->input, $this->output));
     }
 
-    /**
-     * @covers \Modig\Dataset\Console\Command\Import::execute
-     * @covers \Modig\Dataset\Console\Command\Import::configure
-     * @covers \Modig\Dataset\Console\Command\Import::getConfigNotValidMessage
-     * @covers \Modig\Dataset\Console\Command\Import::getConfigTable
-     * @covers \Modig\Dataset\Console\Command\Import::__construct
-     */
+    #[Test]
     public function testExecuteWithNotValidConfigAndNoRunOption()
     {
         $this->input->method('getArgument')->willReturn('file');

@@ -20,17 +20,17 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Import\Persistor;
 
 use Modig\Dataset\Import\Persistor\DefaultPersistor;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriterInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteContext;
 
+#[CoversClass(DefaultPersistor::class)]
 class DefaultPersistorTest extends TestCase
 {
-    /**
-     * @covers \Modig\Dataset\Import\Persistor\DefaultPersistor::persist
-     * @covers \Modig\Dataset\Import\Persistor\DefaultPersistor::__construct
-     */
+    #[Test]
     public function testPersist()
     {
         $writer = $this->createMock(EntityWriterInterface::class);

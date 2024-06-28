@@ -23,16 +23,16 @@ use InvalidArgumentException;
 use Modig\Dataset\Import\ConfigItem;
 use Modig\Dataset\Import\Import;
 use Modig\Dataset\Import\ImportInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[CoversClass(Import::class)]
 class ImportTest extends TestCase
 {
-    /**
-     * @var OutputInterface | MockObject
-     */
-    private OutputInterface $output;
+    private OutputInterface|MockObject $output;
 
     /**
      * Setup tests
@@ -42,17 +42,7 @@ class ImportTest extends TestCase
         $this->output = $this->createMock(OutputInterface::class);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Import::import
-     * @covers \Modig\Dataset\Import\Import::preProcess
-     * @covers \Modig\Dataset\Import\Import::readConfig
-     * @covers \Modig\Dataset\Import\Import::processConfig
-     * @covers \Modig\Dataset\Import\Import::getGlobalConfig
-     * @covers \Modig\Dataset\Import\Import::isConfigValid
-     * @covers \Modig\Dataset\Import\Import::getConfigSettings
-     * @covers \Modig\Dataset\Import\Import::getContext
-     * @covers \Modig\Dataset\Import\Import::__construct
-     */
+    #[Test]
     public function testImportWithWrongConfigFile()
     {
         $import = new Import('missing-file', [$this->getImportEntityMock()], $this->output);
@@ -60,17 +50,7 @@ class ImportTest extends TestCase
         $import->import();
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Import::import
-     * @covers \Modig\Dataset\Import\Import::preProcess
-     * @covers \Modig\Dataset\Import\Import::readConfig
-     * @covers \Modig\Dataset\Import\Import::processConfig
-     * @covers \Modig\Dataset\Import\Import::getGlobalConfig
-     * @covers \Modig\Dataset\Import\Import::isConfigValid
-     * @covers \Modig\Dataset\Import\Import::getConfigSettings
-     * @covers \Modig\Dataset\Import\Import::getContext
-     * @covers \Modig\Dataset\Import\Import::__construct
-     */
+    #[Test]
     public function testImportWithValidConfig()
     {
         $entityOne = $this->getImportEntityMock();
@@ -98,17 +78,7 @@ class ImportTest extends TestCase
         $import->import();
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\Import::import
-     * @covers \Modig\Dataset\Import\Import::preProcess
-     * @covers \Modig\Dataset\Import\Import::readConfig
-     * @covers \Modig\Dataset\Import\Import::processConfig
-     * @covers \Modig\Dataset\Import\Import::getGlobalConfig
-     * @covers \Modig\Dataset\Import\Import::isConfigValid
-     * @covers \Modig\Dataset\Import\Import::getConfigSettings
-     * @covers \Modig\Dataset\Import\Import::getContext
-     * @covers \Modig\Dataset\Import\Import::__construct
-     */
+    #[Test]
     public function testImportWithNotValidValidConfig()
     {
         $entityOne = $this->getImportEntityMock();
@@ -138,8 +108,9 @@ class ImportTest extends TestCase
 
     /**
      * @return ImportInterface| MockObject
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
-    private function getImportEntityMock(): ImportInterface
+    private function getImportEntityMock(): ImportInterface|MockObject
     {
         return $this->createMock(ImportInterface::class);
     }

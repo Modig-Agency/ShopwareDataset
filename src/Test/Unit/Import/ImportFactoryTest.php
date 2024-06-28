@@ -21,15 +21,15 @@ namespace Modig\Dataset\Test\Unit\Import;
 
 use Modig\Dataset\Import\Import;
 use Modig\Dataset\Import\ImportFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[CoversClass(ImportFactory::class)]
 class ImportFactoryTest extends TestCase
 {
-    /**
-     * @covers \Modig\Dataset\Import\ImportFactory::create
-     * @covers \Modig\Dataset\Import\ImportFactory::__construct
-     */
+    #[Test]
     public function testCreate()
     {
         $output = $this->createMock(OutputInterface::class);

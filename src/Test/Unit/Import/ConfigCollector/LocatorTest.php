@@ -23,21 +23,17 @@ use InvalidArgumentException;
 use Modig\Dataset\Import\ConfigCollector\Locator;
 use Modig\Dataset\Import\Locator\LocatorInterface;
 use Modig\Dataset\Import\Locator\Pool;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\Language\LanguageEntity;
 
+#[CoversClass(Locator::class)]
 class LocatorTest extends TestCase
 {
-    /**
-     * @var Pool | MockObject
-     */
-    private Pool $pool;
-    /**
-     * @var Locator
-     */
+    private Pool|MockObject $pool;
     private Locator $locator;
-
     private LocatorInterface $entityLocator;
 
     /**
@@ -50,10 +46,7 @@ class LocatorTest extends TestCase
         $this->locator = new Locator($this->pool, "key", "error", "setting");
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Locator::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Locator::__construct
-     */
+    #[Test]
     public function testCollect()
     {
         $language = $this->createMock(LanguageEntity::class);
@@ -69,10 +62,7 @@ class LocatorTest extends TestCase
         $this->assertTrue($result[0]->isValid());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Locator::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Locator::__construct
-     */
+    #[Test]
     public function testCollectNotEntity()
     {
         $this->pool->expects($this->once())->method('getLocator')->with('key')->willReturn($this->entityLocator);
@@ -84,10 +74,7 @@ class LocatorTest extends TestCase
         $this->assertFalse($result[0]->isValid());
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\ConfigCollector\Locator::collect
-     * @covers \Modig\Dataset\Import\ConfigCollector\Locator::__construct
-     */
+    #[Test]
     public function testCollectNoLocator()
     {
         $this->pool->expects($this->once())->method('getLocator')->with('key')

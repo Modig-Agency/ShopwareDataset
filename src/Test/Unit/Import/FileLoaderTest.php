@@ -20,20 +20,17 @@ declare(strict_types=1);
 namespace Modig\Dataset\Test\Unit\Import;
 
 use Modig\Dataset\Import\FileLoader;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Bundle;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+#[CoversClass(FileLoader::class)]
 class FileLoaderTest extends TestCase
 {
-    /**
-     * @var KernelInterface | MockObject
-     */
-    private KernelInterface $kernel;
-    /**
-     * @var FileLoader
-     */
+    private KernelInterface|MockObject $kernel;
     private FileLoader $fileLoader;
 
     /**
@@ -45,10 +42,7 @@ class FileLoaderTest extends TestCase
         $this->fileLoader = new FileLoader($this->kernel);
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\FileLoader::getFiles
-     * @covers \Modig\Dataset\Import\FileLoader::__construct
-     */
+    #[Test]
     public function testGetFiles()
     {
         $expected = [
@@ -58,10 +52,7 @@ class FileLoaderTest extends TestCase
         $this->assertEquals($expected, $this->fileLoader->getFiles(__DIR__ . '/../_fixtures/files/*'));
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\FileLoader::readFile
-     * @covers \Modig\Dataset\Import\FileLoader::__construct
-     */
+    #[Test]
     public function testReadFile()
     {
         $expected = [
@@ -73,30 +64,21 @@ class FileLoaderTest extends TestCase
         $this->assertEquals($expected, $this->fileLoader->readFile(__DIR__ . '/../_fixtures/files/file1.json'));
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\FileLoader::getSource
-     * @covers \Modig\Dataset\Import\FileLoader::__construct
-     */
+    #[Test]
     public function testGetSourceWithoutBundle()
     {
         $this->kernel->expects($this->never())->method('getBundle');
         $this->assertEquals('file', $this->fileLoader->getSource('file'));
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\FileLoader::getSource
-     * @covers \Modig\Dataset\Import\FileLoader::__construct
-     */
+    #[Test]
     public function testGetSourceWithNullValid()
     {
         $this->kernel->expects($this->never())->method('getBundle');
         $this->assertNull($this->fileLoader->getSource(null));
     }
 
-    /**
-     * @covers \Modig\Dataset\Import\FileLoader::getSource
-     * @covers \Modig\Dataset\Import\FileLoader::__construct
-     */
+    #[Test]
     public function testGetSourceWithBundle()
     {
         $bundle = $this->createMock(Bundle::class);
